@@ -102,7 +102,7 @@ const Navbar = () => {
             <Link to={"/"}>
               <ImageLazyLoading
                 img={"/asessts/navbar/logo.webp"}
-                alt={"Logo"}
+                alt={"Logo"}  
               />
             </Link>
           </div>

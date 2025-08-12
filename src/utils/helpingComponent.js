@@ -59,21 +59,45 @@ export const ValidInput = ({ props }) => {
   );
 };
 
-export const ImageLazyLoading = ({ img = "", className, alt, onClick }) => {
+export const ImageLazyLoading = ({
+  img = "",
+  className,
+  alt,
+  onClick,
+  priority = false,
+}) => {
+  if (priority) {
+    // Load immediately for LCP
+    return (
+      <img
+        src={img}
+        alt={alt}
+        className={className}
+        onClick={onClick}
+        width="150"
+        height="150"
+        loading="eager"
+        decoding="async"
+        style={{ objectFit: "cover" }}
+      />
+    );
+  }
 
+  // Lazy load for non-critical images
   return (
-    <img
+    <LazyLoadImage
       src={img}
       alt={alt}
       className={className}
-      loading="lazy"
+      effect="blur"
       onClick={onClick}
       width="150"
       height="150"
+      placeholderSrc="/placeholder-hero.jpg" // small blurred version
+      style={{ objectFit: "cover" }}
     />
   );
 };
-
 
 export const DateFormatter = (date) => {
   const original = new Date(date);

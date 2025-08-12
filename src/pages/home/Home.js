@@ -1,37 +1,33 @@
 /** @format */
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import HeroSection from "../../components/home/HeroSection";
-import Services from "../../components/home/Services";
-import Description from "../../components/home/Description";
-import LatestNews from "../../components/home/LatestNews";
-import Testimonials from "../../components/PaymentPlans/Testimonials";
-import GallarySlider from "../../components/Sliders/GallarySlider";
-import Partners from "../../components/Partners/Partners";
-import Reviews from "../../components/Reviews/Reviews";
-import Awards from "../../components/Awards/Awards";
 import { getApi } from "../../Repository/Api";
-import DynamicHelmet from "../../components/Helmet/DynamicHelmet";
 import endPoints from "../../Repository/apiConfig";
-import OfferBanner from "../../components/OfferBanner/OfferBanner";
-import MobileOfferBanner from "../../components/OfferBanner/MobileOfferBanner";
+import DynamicHelmet from "../../components/Helmet/DynamicHelmet";
+
+// Lazy loaded components (below-the-fold)
+const Services = React.lazy(() => import("../../components/home/Services"));
+const Description = React.lazy(() => import("../../components/home/Description"));
+const LatestNews = React.lazy(() => import("../../components/home/LatestNews"));
+const Testimonials = React.lazy(() => import("../../components/PaymentPlans/Testimonials"));
+const GallarySlider = React.lazy(() => import("../../components/Sliders/GallarySlider"));
+const Partners = React.lazy(() => import("../../components/Partners/Partners"));
+const Reviews = React.lazy(() => import("../../components/Reviews/Reviews"));
+const Awards = React.lazy(() => import("../../components/Awards/Awards"));
+const OfferBanner = React.lazy(() => import("../../components/OfferBanner/OfferBanner"));
+const MobileOfferBanner = React.lazy(() => import("../../components/OfferBanner/MobileOfferBanner"));
 
 const Home = () => {
   const [metaResponse, setMetaResponse] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [open1, setOpen1] = useState(false);
 
-  const fetchMetaTags = () => {
+  useEffect(() => {
     getApi({
       url: endPoints.metaTags.homePage,
       setResponse: setMetaResponse,
     });
-  };
-
-  useEffect(() => {
-    fetchMetaTags();
   }, []);
-
-  const [open, setOpen] = useState(false);
-  const [open1, setOpen1] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth <= 500) {
@@ -41,7 +37,6 @@ const Home = () => {
     }
   }, []);
 
-
   return (
     <div>
       {metaResponse && (
@@ -50,18 +45,24 @@ const Home = () => {
           description={metaResponse?.data?.description}
         />
       )}
+
+      {/* Above-the-fold */}
       <HeroSection />
-      <Awards />
-      <Services />
-      <Reviews />
-      <Testimonials />
-      <div className="mb-14"></div>
-      <Description />
-      <Partners />
-      <LatestNews />
-      <GallarySlider />
-      <OfferBanner open={open} onClose={() => setOpen(false)} />
-      <MobileOfferBanner open={open1} onClose={() => setOpen1(false)} />
+
+      {/* Below-the-fold components loaded lazily */}
+      <Suspense fallback={<div style={{ height: "200px" }}>Loading...</div>}>
+        <Awards />
+        <Services />
+        <Reviews />
+        <Testimonials />
+        <div className="mb-14"></div>
+        <Description />
+        <Partners />
+        <LatestNews />
+        <GallarySlider />
+        <OfferBanner open={open} onClose={() => setOpen(false)} />
+        <MobileOfferBanner open={open1} onClose={() => setOpen1(false)} />
+      </Suspense>
     </div>
   );
 };
